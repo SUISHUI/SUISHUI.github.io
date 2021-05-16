@@ -18,9 +18,25 @@
   <meta name="author" content="hu">
   <meta name="keywords" content="">
   
-  <title>标签 - 记录自己的博客</title>
+  <title>使用adb调试gpio - 记录自己的博客</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.6.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
 
 
 
@@ -48,7 +64,7 @@
 
 
 <body>
-  <header style="height: 80vh;">
+  <header style="height: 70vh;">
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
@@ -147,17 +163,50 @@
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
           <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="标签">
+            <span class="h2" id="subtitle" title="使用adb调试gpio">
               
             </span>
 
             
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-05-16 23:01" pubdate>
+        2021年5月16日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      568 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      7
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
           </div>
 
-          
-            <div class="scroll-down-bar">
-              <i class="iconfont icon-arrowdown"></i>
-            </div>
           
         </div>
       </div>
@@ -166,24 +215,128 @@
 
   <main>
     
-      <div class="container nopadding-x-md">
-        <div class="py-5" id="board"
-          >
-          
-          <div class="container">
-            <div class="row">
-              <div class="col-12 col-md-10 m-auto">
-                
+      
 
-<div class="text-center tagcloud">
-  <a href="/tags/adb/" style="font-size: 15px; color: #bbe">adb</a> <a href="/tags/android/" style="font-size: 30px; color: #337ab7">android</a> <a href="/tags/dts/" style="font-size: 15px; color: #bbe">dts</a> <a href="/tags/gpio/" style="font-size: 30px; color: #337ab7">gpio</a> <a href="/tags/linux/" style="font-size: 15px; color: #bbe">linux</a> <a href="/tags/%E5%B1%8F%E5%B9%95%E6%97%8B%E8%BD%AC/" style="font-size: 15px; color: #bbe">屏幕旋转</a> <a href="/tags/%E5%BC%80%E6%9C%BA%E5%8A%A8%E7%94%BB/" style="font-size: 15px; color: #bbe">开机动画</a>
-</div>
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">使用adb调试gpio</h1>
+            
+            <div class="markdown-body">
+              <h1 id="使用-adb-调试-gpio"><a href="#使用-adb-调试-gpio" class="headerlink" title="使用 adb 调试 gpio"></a>使用 adb 调试 gpio</h1><p>echo 1006 &gt; /sys/class/gpio/unexport</p>
+<p>echo 1006 &gt; /sys/class/gpio/export</p>
+<p>echo out&gt; /sys/class/gpio/gpio1006/direction</p>
+<p>echo 1 &gt;/sys/class/gpio/gpio1006/value</p>
+<p>echo 0 &gt;/sys/class/gpio/gpio1006/value</p>
+<p>cat /sys/class/gpio/gpio1006/direction</p>
+<p>cat /sys/class/gpio/gpio1006/direction</p>
+<p>cat /sys/class/gpio/gpio1006/value</p>
+<p>通过 sysfs 方式控制 GPIO，先访问/sys/class/gpio 目录，向 export 文件写入 GPIO 编号，使得该 GPIO 的操作接口从内核空间暴露到用户空间，GPIO 的操作接口包括 direction 和 value 等，direction 控制 GPIO 方向，而 value 可控制 GPIO 输出或获得 GPIO 输入。文件 IO 方式操作 GPIO，使用到了 4 个函数 open、close、read、write。</p>
+<p>首先，看看系统中有没有“/sys/class/gpio”这个文件夹。如果没有请在编译内核的时候加入 Device Drivers-&gt; GPIO Support -&gt;/sys/class/gpio/… (sysfs interface)。</p>
+<p>/sys/class/gpio 的使用说明：</p>
+<p>gpio_operation 通过/sys/文件接口操作 IO 端口 GPIO 到文件系统的映射<br>控制 GPIO 的目录位于/sys/class/gpio<br>/sys/class/gpio/export 文件用于通知系统需要导出控制的 GPIO 引脚编号<br>/sys/class/gpio/unexport 用于通知系统取消导出<br>/sys/class/gpio/gpiochipX 目录保存系统中 GPIO 寄存器的信息，包括每个寄存器控制引脚的起始编号 base，寄存器名称，引脚总数 导出一个引脚的操作步骤<br>首先计算此引脚编号，引脚编号 = 控制引脚的寄存器基数 + 控制引脚寄存器位数<br>向/sys/class/gpio/export 写入此编号，比如 12 号引脚，在 shell 中可以通过以下命令实现，命令成功后生成/sys/class/gpio/gpio12 目录，如果没有出现相应的目录，说明此引脚不可导出<br>direction 文件，定义输入输入方向，可以通过下面命令定义为输出。direction 接受的参数：in, out, high, low。high/low 同时设置方向为输出，并将 value 设置为相应的 1/0<br>value 文件是端口的数值，为 1 或 0</p>
+<p>几个例子：</p>
+<ol>
+<li> 导出</li>
+</ol>
+<p>/sys/class/gpio# echo 44 &gt; export</p>
+<ol start="2">
+<li> 设置方向</li>
+</ol>
+<p>/sys/class/gpio/gpio44# echo out &gt; direction</p>
+<ol start="3">
+<li> 查看方向</li>
+</ol>
+<p>/sys/class/gpio/gpio44# cat direction</p>
+<ol start="4">
+<li> 设置输出</li>
+</ol>
+<p>/sys/class/gpio/gpio44# echo 1 &gt; value</p>
+<ol start="5">
+<li> 查看输出值</li>
+</ol>
+<p>/sys/class/gpio/gpio44# cat value</p>
+<ol start="6">
+<li> 取消导出</li>
+</ol>
+<p>/sys/class/gpio# echo 44 &gt; unexport</p>
 
-              </div>
             </div>
-          </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/gpio/">gpio</a>
+                    
+                      <a class="hover-with-bg" href="/tags/adb/">adb</a>
+                    
+                      <a class="hover-with-bg" href="/tags/linux/">linux</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/05/16/ff2029aa80d64c84873e0256fcc26771/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">开关机动画</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/05/16/43f372a6392b4aea9dc0a16015efb294/">
+                        <span class="hidden-mobile">了解和认识GPIO和dts</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
         </div>
       </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
     
 
     
@@ -263,9 +416,15 @@
 
 
 
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.2/dist/tocbot.min.js" ></script>
 
 
 
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
 
 
 

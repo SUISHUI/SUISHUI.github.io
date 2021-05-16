@@ -18,7 +18,7 @@
   <meta name="author" content="hu">
   <meta name="keywords" content="">
   
-  <title>标签 - 记录自己的博客</title>
+  <title>记录自己的博客</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
 
@@ -48,7 +48,7 @@
 
 
 <body>
-  <header style="height: 80vh;">
+  <header style="height: 100vh;">
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
@@ -142,12 +142,12 @@
 </nav>
 
     <div class="banner" id="banner" parallax=true
-         style="background: url('/img/default.png') no-repeat center center;
+         style="background: url('/img/no_title.png') no-repeat center center;
            background-size: cover;">
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
           <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="标签">
+            <span class="h2" id="subtitle" title="An elegant Material-Design theme for Hexo">
               
             </span>
 
@@ -168,16 +168,211 @@
     
       <div class="container nopadding-x-md">
         <div class="py-5" id="board"
-          >
+          style=margin-top:0>
           
           <div class="container">
             <div class="row">
               <div class="col-12 col-md-10 m-auto">
                 
 
-<div class="text-center tagcloud">
-  <a href="/tags/adb/" style="font-size: 15px; color: #bbe">adb</a> <a href="/tags/android/" style="font-size: 30px; color: #337ab7">android</a> <a href="/tags/dts/" style="font-size: 15px; color: #bbe">dts</a> <a href="/tags/gpio/" style="font-size: 30px; color: #337ab7">gpio</a> <a href="/tags/linux/" style="font-size: 15px; color: #bbe">linux</a> <a href="/tags/%E5%B1%8F%E5%B9%95%E6%97%8B%E8%BD%AC/" style="font-size: 15px; color: #bbe">屏幕旋转</a> <a href="/tags/%E5%BC%80%E6%9C%BA%E5%8A%A8%E7%94%BB/" style="font-size: 15px; color: #bbe">开机动画</a>
-</div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/05/16/ff2029aa80d64c84873e0256fcc26771/" target="_self">
+          开关机动画
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/05/16/ff2029aa80d64c84873e0256fcc26771/" target="_self">
+          
+          
+            
+          
+          开关机动画###启动图位置/kernel###开机动画
+
+开机动画的地址：system\media\bootanimation.zip 必须输入 system 分区才能改变开机动画
+先在 vim device/rockchip/common/BoardConfig.mk
+
+保证 BOOT_SHUTDOWN_ANIMATION_RINGING ?= turedevice/rockchip/commo
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-05-16 23:06" pubdate>
+              2021-05-16
+            </time>
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/android/">android</a>
+            
+              <a href="/tags/%E5%BC%80%E6%9C%BA%E5%8A%A8%E7%94%BB/">开机动画</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/05/16/785cee0850e6426f9b7aae69b2825721/" target="_self">
+          使用adb调试gpio
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/05/16/785cee0850e6426f9b7aae69b2825721/" target="_self">
+          
+          
+            
+          
+          使用 adb 调试 gpioecho 1006 &gt; /sys/class/gpio/unexport
+echo 1006 &gt; /sys/class/gpio/export
+echo out&gt; /sys/class/gpio/gpio1006/direction
+echo 1 &gt;/sys/class/gpio/gpio1006/value
+echo 0 &gt;/sys/cl
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-05-16 23:01" pubdate>
+              2021-05-16
+            </time>
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/gpio/">gpio</a>
+            
+              <a href="/tags/adb/">adb</a>
+            
+              <a href="/tags/linux/">linux</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/05/16/43f372a6392b4aea9dc0a16015efb294/" target="_self">
+          了解和认识GPIO和dts
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/05/16/43f372a6392b4aea9dc0a16015efb294/" target="_self">
+          
+          
+            
+          
+          了解和认识 GPIO 和 dts了解 GPIOGPIO 是什么GPIO, 全称 General-Purpose Input/Output（通用输入输出），是一种软件运行期间能够动态配置和控制的通用引脚
+了解 DTSDTS 关联关系linux 设备驱动模型三要素：device，driver，bus。Device 和 driver 分别注册到 bus 上，然后通过 name 匹配，最终走到 drive
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-05-16 20:55" pubdate>
+              2021-05-16
+            </time>
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/gpio/">gpio</a>
+            
+              <a href="/tags/dts/">dts</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/05/16/db6466d8e2d84253b8d47963f15dfd50/" target="_self">
+          屏幕旋转
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/05/16/db6466d8e2d84253b8d47963f15dfd50/" target="_self">
+          
+          
+            
+          
+          旋转屏幕在 framework/base/services/core/java/com/android/server/wm/WindowManagerService.java 中
+getOrientationLocked()函数中确定横屏和竖屏
+强制应用横竖屏 就是调用了 AMS 的 setRequestedOrientation 接口，这个接口先是调用 WMS 的 setAppOrientati
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-05-16 20:54" pubdate>
+              2021-05-16
+            </time>
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/android/">android</a>
+            
+              <a href="/tags/%E5%B1%8F%E5%B9%95%E6%97%8B%E8%BD%AC/">屏幕旋转</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+
+
+
 
               </div>
             </div>

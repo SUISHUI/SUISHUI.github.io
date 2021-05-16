@@ -1,0 +1,525 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="学习才能提升自己好吧">
+  <meta name="author" content="hu">
+  <meta name="keywords" content="">
+  
+  <title>了解和认识GPIO和dts - 记录自己的博客</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.6.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="了解和认识GPIO和dts">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-05-16 20:55" pubdate>
+        2021年5月16日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.8k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      38
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">了解和认识GPIO和dts</h1>
+            
+            <div class="markdown-body">
+              <h1 id="了解和认识-GPIO-和-dts"><a href="#了解和认识-GPIO-和-dts" class="headerlink" title="了解和认识 GPIO 和 dts"></a>了解和认识 GPIO 和 dts</h1><h2 id="了解-GPIO"><a href="#了解-GPIO" class="headerlink" title="了解 GPIO"></a>了解 GPIO</h2><h3 id="GPIO-是什么"><a href="#GPIO-是什么" class="headerlink" title="GPIO 是什么"></a>GPIO 是什么</h3><p>GPIO, 全称 General-Purpose Input/Output（通用输入输出），是一种软件运行期间能够动态配置和控制的通用引脚</p>
+<h2 id="了解-DTS"><a href="#了解-DTS" class="headerlink" title="了解 DTS"></a>了解 DTS</h2><p>DTS 关联关系<br>linux 设备驱动模型三要素：device，driver，bus。Device 和 driver 分别注册到 bus 上，然后通过 name 匹配，最终走到 driver 的 probe 函数中。<br>传统的 ARM Linux 定义 platform_device 和注册过程都是通过静态写在 arch/mach 下面的文件中，为每一个外设都初始化好一个 platform_device，然后在 kernel 初始化的时候把这些 device 注册到 platform_bus_type 中，然后在后续的 driver 初始化中再把相应的 platform_driver 结构体注册到 platform_bus_type 中，然后通过 name 匹配。<br>现在有了 device tree，platform_device 不需要静态定义在 c 文件中了，而是利用 device tree 的方法实现了动态生成 platform_device。这样同一个内核就可以在不需要修改内核代码的情况下根据不同的 DTS 文件，动态生成针对不同硬件平台的 platform_device。</p>
+<h3 id="什么是-DTS？为什么要引入-DTS？"><a href="#什么是-DTS？为什么要引入-DTS？" class="headerlink" title="什么是 DTS？为什么要引入 DTS？"></a>什么是 DTS？为什么要引入 DTS？</h3><p>DTS 即 Device Tree Source 设备树源码, Device Tree 是一种描述硬件的数据结构，它起源于 OpenFirmware (OF)。<br>ARM 平台的相关 code 做出如下相关规范调整，这个也正是引入 DTS 的原因。</p>
+<ul>
+<li><p>1、ARM 的核心代码仍然保存在 arch/arm 目录下在 dts (Device Tree) 文件</p>
+</li>
+<li><p>2、ARM SoC core architecture code 保存在 arch/arm 目录下</p>
+</li>
+<li><p>3、ARM SOC 的周边外设模块的驱动保存在 drivers 目录下</p>
+</li>
+<li><p>4、ARM SOC 的特定代码在 arch/arm/mach-xxx 目录下</p>
+</li>
+<li><p><strong>5、ARM SOC board specific 的代码被移除，由 DeviceTree 机制来负责传递硬件拓扑和硬件资源信息。</strong></p>
+<p><strong>本质上，Device Tree 改变了原来用 hardcode 方式将 HW（hardware）配置信息嵌入到内核代码的方法，改用 bootloader 传递一个 DB 的形式。<br>如果我们认为 kernel 是一个 black box，那么其输入参数应该包括：<br>a.识别 platform 的信息 b.runtime 的配置参数 c.设备的拓扑结构以及特性<br>对于嵌入式系统，在系统启动阶段，bootloader 会加载内核并将控制权转交给内核，此外，还需要把上述的三个参数信息传递给 kernel，以便 kernel 可以有较大的灵活性。在 linux kernel 中，Device Tree 的设计目标就是如此。</strong></p>
+<p>runtime 使程序能够与运行的环境相连接</p>
+</li>
+</ul>
+<h3 id="DTS-文件格式"><a href="#DTS-文件格式" class="headerlink" title="DTS 文件格式"></a>DTS 文件格式</h3><figure class="highlight basic"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><code class="hljs basic">/ &#123; <span class="hljs-string">&quot;/&quot;</span> 表示root结点，该结点下有两个子结点node1和node2<br><br>    node1 &#123;<br>      //结点<span class="hljs-string">&quot;node1&quot;</span>下又含有子结点，对于嵌入式系统，<br>      //在系统启动阶段，bootloader会加载内核并将控制权转交给内核，<br>      //此外，还需要把上述的三个参数信息传递给kernel，以便kernel可以有较大的灵活性。<br><br>        a-string-<span class="hljs-keyword">list</span>-property = <span class="hljs-string">&quot;firststring&quot;</span>, <span class="hljs-string">&quot;second string&quot;</span>;字符串数组<br><br>        a-byte-<span class="hljs-keyword">data</span>-property = [<span class="hljs-number">0</span>x01 <span class="hljs-number">0</span>x23 <span class="hljs-number">0</span>x340x56];二进制数组<br><br>        child-node1 &#123;<br><br>            first-child-property;<br><br>            second-child-property = &lt;<span class="hljs-number">1</span>&gt;;Cells（由u32整数组成）<br><br>            a-string-property = <span class="hljs-string">&quot;Hello,world&quot;</span>;<br><br>        &#125;;<br><br>        child-node2 &#123;<br><br>        &#125;;<br><br>    &#125;;<br><br>    node2 &#123;<br><br>        an-empty-property;属性为空<br><br>        a-cell-property = &lt;<span class="hljs-number">1</span> <span class="hljs-number">2</span> <span class="hljs-number">3</span> <span class="hljs-number">4</span>&gt;; /* each number (cell) is a uint32 */<br><br>        child-node1 &#123;<br><br>        &#125;;<br><br>    &#125;;<br><br>&#125;;<br></code></pre></td></tr></table></figure>
+
+<h4 id="常用属性"><a href="#常用属性" class="headerlink" title="常用属性"></a>常用属性</h4><h5 id="1-compatible"><a href="#1-compatible" class="headerlink" title="1.compatible"></a>1.compatible</h5><p>上述.dts 文件中,root 结点”/“的 compatible 属性 compatible = “acme,coyotes-revenge”;定义了系统的名称,它的组织形式为:<manufacturer>,<model>。Linux 内核透过 root 结点”/“的 compatible 属性即可判断它启动的是什么 machine。在.dts 文件的每个设备,都有一个 compatible 属性,<strong>compatible 属性用户驱动和设备的绑定。</strong></p>
+<h5 id="2-结点命名"><a href="#2-结点命名" class="headerlink" title="2.结点命名"></a>2.结点命名</h5><p>它们遵循的组织形式为:<name>[@<unit-address>],&lt;&gt;中的内容是必选项,[]中的则为可选项。name 是一个 ASCII 字符串,用于描述结点对应的设备类型,如 3com Ethernet 适配器对应的结点 name 宜为 ethernet,而不是 3com。如果一个结点描述的设备有地址,则应该给出@unit-address。多个相同类型设备结点的 name 可以一样,只要 unit-address 不同即可,如本例中含有 cpu@0、cpu@1 以及 serial@101f0000 与 serial@101f2000 这样的同名结点。设备的 unit-address 地址也经常在其对应结点的 reg 属性中给出。</p>
+<h5 id="3-地址信息"><a href="#3-地址信息" class="headerlink" title="3.地址信息"></a>3.地址信息</h5><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs C">reg<br><span class="hljs-meta">#address-cells</span><br><span class="hljs-meta">#size-cells</span><br></code></pre></td></tr></table></figure>
+
+<p>其中 reg 的组织形式为 reg = &lt;address1 length1 [address2 length2] [address3 length3] … &gt;,其中的每一组 address length 表明了设备使用的一个地址范围。父结点的#address-cells 和#size-cells 分别决定了子结点的 reg 属性的 address 和 length 字段的长度。</p>
+<h5 id="4-ranges-属性"><a href="#4-ranges-属性" class="headerlink" title="4.ranges 属性"></a>4.ranges 属性</h5><p>root 结点的子结点描述的是 CPU 的视图,因此 root 子结点的 address 区域就直接位于 CPU 的 memory 区域。但是,经过总线桥后的 address 往往需要经过转换才能对应的 CPU 的 memory 映射。external-bus 的 ranges 属性定义了经过 external-bus 桥后的地址范围如何映射到 CPU 的 memory 区域。</p>
+<h5 id="5-中断相关"><a href="#5-中断相关" class="headerlink" title="5.中断相关"></a>5.中断相关</h5><p>interrupt-controller – 这个属性为空,中断控制器应该加上此属性表明自己的身份;#interrupt-cells – 与#address-cells 和 #size-cells 相似,它表明连接此中断控制器的设备的 interrupts 属性的 cell 大小。在整个 Device Tree 中,与中断相关的属性还包括 interrupt-parent – 设备结点透过它来指定它所依附的中断控制器的 phandle,当结点没有指定 interrupt-parent 时,则从父级结点继承。</p>
+<h3 id="实战"><a href="#实战" class="headerlink" title="实战"></a>实战</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs sh">pci@0x10180000 &#123;<br>        compatible = <span class="hljs-string">&quot;arm,versatile-pci-hostbridge&quot;</span>, <span class="hljs-string">&quot;pci&quot;</span>;<br>        reg = &lt;0x10180000 0x1000&gt;;<br>        interrupts = &lt;8 0&gt;;<br>        bus-ranges = &lt;0 0&gt;;<br><br>        <span class="hljs-comment">#address-cells = &lt;3&gt;</span><br>        <span class="hljs-comment">#size-cells = &lt;2&gt;;</span><br>        ranges = &lt;0x42000000 0 0x80000000 0x80000000 0 0x20000000<br>                 0x02000000 0 0xa0000000 0xa0000000 0 0x10000000<br>                 0x01000000 0 0x00000000 0xb0000000 0 0x01000000&gt;;<br> &#125;;<br></code></pre></td></tr></table></figure>
+
+<h4 id="修改-Makefile-Kconfig-和-config"><a href="#修改-Makefile-Kconfig-和-config" class="headerlink" title="修改 Makefile Kconfig 和 .config"></a>修改 Makefile Kconfig 和 .config</h4><h5 id="Makefile-Kconfig-和-config-三者作用"><a href="#Makefile-Kconfig-和-config-三者作用" class="headerlink" title="Makefile Kconfig 和 .config 三者作用"></a>Makefile Kconfig 和 .config 三者作用</h5><p>简单来说就是去饭店点菜：Kconfig 是菜单，Makefile 是做法，.config 就是你点的菜。<br>Makefile：一个文本形式的文件，编译源文件的方法。<br>Kconfig：一个文本形式的文件，内核的配置菜单。<br>.config：编译内核所依据的配置。</p>
+<h5 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h5><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/hbtmwangjin/articles/9012804.html">浅谈内核的 Makefile、Kconfig 和.config 文件</a></p>
+<h5 id="实际操作"><a href="#实际操作" class="headerlink" title="实际操作"></a>实际操作</h5><ul>
+<li><p>1.增加驱动文件和对应的 Makefile Kconfig</p>
+</li>
+<li><p>2.修改上一级的 Makefile Kconfig</p>
+</li>
+<li><p>3.使用 Make menuconfig 进行配置</p>
+</li>
+<li><p>4.编译烧录和运行</p>
+</li>
+<li><p><strong>5.操作 GPIO 需要对 DTS 进行操作</strong></p>
+</li>
+<li><p>首先需要在 dts (Device Tree) 文件 firefly-rk3288.dts 中增加驱动的资源描述：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash">firefly-led&#123;<br>    compatible = <span class="hljs-string">&quot;firefly,led&quot;</span>;<br>    led-work = &lt;&amp;gpio8 GPIO_A2 GPIO_ACTIVE_LOW&gt;;<br>    led-power = &lt;&amp;gpio8 GPIO_A1 GPIO_ACTIVE_LOW&gt;;<br>    status = <span class="hljs-string">&quot;okay&quot;</span>;<br>&#125;;<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>这里定义了两颗 LED 灯的 GPIO 设置,之后在驱动程序中加入对 GPIO 口的申请和控制则可：</p>
+</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">#ifdef  CONFIG_OF</span><br><span class="hljs-comment">#include &lt;linux/of.h&gt;</span><br><span class="hljs-comment">#include &lt;linux/of_gpio.h&gt;</span><br><span class="hljs-comment">#endif</span><br><br>static int firefly_led_probe(struct platform_device *pdev)&#123;<br>  int ret = -1;int gpio, flag;<br>  struct device_node *led_node = pdev-&gt;dev.of_node;<br>  gpio = of_get_named_gpio_flags(led_node, <span class="hljs-string">&quot;led-power&quot;</span>, 0, &amp;flag);<br>  <span class="hljs-keyword">if</span> (!gpio_is_valid(gpio))&#123;<br>      printk(<span class="hljs-string">&quot;invalid led-power: %d\n&quot;</span>,gpio);<br>      <span class="hljs-built_in">return</span> -1;<br>  &#125;<br>      printk(<span class="hljs-string">&quot;gpio %d request failed!\n&quot;</span>,gpio);<br>      <span class="hljs-built_in">return</span> ret;<br>  &#125;<br>  led_info.power_gpio = gpio;<br>  led_info.power_enable_value = (flag == OF_GPIO_ACTIVE_LOW) ? 0 : 1;<br>  gpio_direction_output(led_info.power_gpio, !(led_info.power_enable_value));<br>  ...<br>  on_error:gpio_free(gpio);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>中断进程的名字可以用 cat /proc/interrupt 显示出来<br><img src="../../pic/gpio/Screenshot%20from%202020-08-31%2017-25-12.png" srcset="/img/loading.gif" lazyload></p>
+<h1 id="GPIO-驱动配置"><a href="#GPIO-驱动配置" class="headerlink" title="GPIO 驱动配置"></a>GPIO 驱动配置</h1><h2 id="添加驱动文件夹"><a href="#添加驱动文件夹" class="headerlink" title="添加驱动文件夹"></a>添加驱动文件夹</h2><p>在 kernel/drivers 文件夹下新建文件夹</p>
+<p>kernel/drivers/hu</p>
+<p>内含三个文件 bee.c Kconfig Makefile</p>
+<h2 id="配置-dts-文件"><a href="#配置-dts-文件" class="headerlink" title="配置 dts 文件"></a>配置 dts 文件</h2><p>进入 kernel/arch/arm/boot/dts 文件夹 编辑驱动节点<br>编辑 rk3288-tb.dts,添加一下内容来注册驱动<br><img src="../../pic/gpio/dts.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="添加驱动文件"><a href="#添加驱动文件" class="headerlink" title="添加驱动文件"></a>添加驱动文件</h2><p>在 kernel/drivers 文件夹下新建文件夹，文件名任意，在文件夹下新建 3 个文件<div>*.c Makefile Kconfig<div><br>Makefile 内容如下</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">#Bee core</span><br>obj-$(CONFIG_BEE)               += bee.o<br></code></pre></td></tr></table></figure>
+
+<p>Kconfig 内容如下</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">config BEE<br>        tristate <span class="hljs-string">&quot;bee driver&quot;</span><br>        <span class="hljs-built_in">help</span><br>          driver <span class="hljs-keyword">for</span> bee<br></code></pre></td></tr></table></figure>
+
+<p>修改上级菜单，也就是 kernel/drivers 文件夹下的 Makefile Kconfig，否则新的驱动不会起效。<br>在 Makefile 文件最后添加</p>
+<figure class="highlight fix"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs fix"><span class="hljs-attr">oby-y         +</span>=<span class="hljs-string"> hu/</span><br></code></pre></td></tr></table></figure>
+
+<p>在 Kconfig 文件最后添加</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">source</span> <span class="hljs-string">&quot;drivers/hu/Kconfig&quot;</span><br></code></pre></td></tr></table></figure>
+
+<p>*编译驱动还需要修改 kernel/.config,在编译时选择即可。*也可以运行 make menuconfig，但不建议这么做</p>
+<h1 id="编写-GPIO-驱动"><a href="#编写-GPIO-驱动" class="headerlink" title="编写 GPIO 驱动"></a>编写 GPIO 驱动</h1><p><strong>Linux dmesg 命令用于显示开机信息。</strong><br>kernel 会将开机信息存储在 ring buffe(循环缓冲区)中。您若是开机时来不及查看信息，可利用 dmesg 来查看。开机信息亦保存在/var/log 目录中，名称为 dmesg 的文件里。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;linux/kernel.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;linux/init.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;linux/module.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;linux/delay.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;linux/gpio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;linux/poll.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;linux/interrupt.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">ifdef</span> CONFIG_OF</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;linux/of.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;linux/of_gpio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;linux/of_platform.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">endif</span></span><br><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> GPIO_LOW 0</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> GPIO_HIGH 1</span><br><br><span class="hljs-comment">/*</span><br><span class="hljs-comment">此处是探针程序的运行</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">irqreturn_t</span> <span class="hljs-title">key_irq_handle</span><span class="hljs-params">(<span class="hljs-keyword">int</span> irq, <span class="hljs-keyword">void</span> *dev_id, struct pt_regs *regs)</span></span><br><span class="hljs-function"></span>&#123;<br>  	...<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> <span class="hljs-title">samtu_ledtest_probe</span><span class="hljs-params">(struct platform_device *pdev)</span></span>&#123;<br>    ...<br>    ret = request_irq(irq, key_irq_handle, IRQF_TRIGGER_FALLING, <span class="hljs-string">&quot;key&quot;</span>, <span class="hljs-string">&quot;keyflag&quot;</span>); <span class="hljs-comment">// 注册中断</span><br>  	...<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> <span class="hljs-title">samtu_ledtest_remove</span><span class="hljs-params">(struct platform_device *pdev)</span></span>&#123;<br> 	 ...<br>&#125;<br><span class="hljs-meta">#<span class="hljs-meta-keyword">ifdef</span> CONFIG_OF</span><br><span class="hljs-keyword">static</span> <span class="hljs-keyword">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">of_device_id</span> <span class="hljs-title">of_samtu_ledtest_match</span>[] =</span> &#123;<br>    &#123;.compatible = <span class="hljs-string">&quot;samtu,bee&quot;</span>&#125;,<br>    &#123;<span class="hljs-comment">/*    */</span>&#125;&#125;;<br><span class="hljs-meta">#<span class="hljs-meta-keyword">endif</span></span><br><span class="hljs-keyword">static</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">platform_driver</span> <span class="hljs-title">samtu_ledtest_driver</span> =</span><br>&#123;<br>        .probe = samtu_ledtest_probe,				<span class="hljs-comment">//他首先执行的是.probe</span><br>        .remove = samtu_ledtest_remove,				<span class="hljs-comment">//主要的结构体，.probe 探针	.remove 移除	.driver 驱动</span><br>        .driver = &#123;<br>            .name = <span class="hljs-string">&quot;samtu_bee&quot;</span>,					<span class="hljs-comment">//.name</span><br>            .owner = THIS_MODULE,<br><span class="hljs-meta">#<span class="hljs-meta-keyword">ifdef</span> CONFIG_OF</span><br>            .of_match_table = of_samtu_ledtest_match,<span class="hljs-comment">//.of_match_table  这个是match DTS相关的地方</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">endif</span></span><br>        &#125;,<br><br>&#125;;<br><span class="hljs-comment">/*</span><br><span class="hljs-comment">下面的程序是驱动注册,注册平台驱的结构体</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> __init <span class="hljs-title">ledtest_init</span><span class="hljs-params">(<span class="hljs-keyword">void</span>)</span> <span class="hljs-comment">//init led test //程序运行此处2</span></span><br><span class="hljs-function"></span>&#123;<br>        <span class="hljs-keyword">return</span> platform_driver_register(&amp;samtu_ledtest_driver);<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><span class="hljs-comment">/*</span><br><span class="hljs-comment">下面的程序是退出驱动注册</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> __exit <span class="hljs-title">ledtest_exit</span><span class="hljs-params">(<span class="hljs-keyword">void</span>)</span> <span class="hljs-comment">//exit the led test</span></span><br><span class="hljs-function"></span>&#123;<br>        platform_driver_unregister(&amp;samtu_ledtest_driver);<br>        printk(<span class="hljs-string">&quot;-----Exit ledtest\n&quot;</span>);<br>&#125;<br><br><span class="hljs-comment">/*</span><br><span class="hljs-comment">下面的程序是驱动调用，整个驱动首先调用此处</span><br><span class="hljs-comment">*/</span><br>module_init(ledtest_init); <span class="hljs-comment">//程序首先调用此处1</span><br><span class="hljs-comment">/*</span><br><span class="hljs-comment">下面的程序是驱动调用，整个驱动结束时调用此处</span><br><span class="hljs-comment">*/</span><br>module_exit(ledtest_exit);<br></code></pre></td></tr></table></figure>
+
+<p>我们分开看这几个函数，按启动顺序开始</p>
+<h2 id="启动结构体"><a href="#启动结构体" class="headerlink" title="启动结构体"></a>启动结构体</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-meta-keyword">ifdef</span> CONFIG_OF</span><br><span class="hljs-keyword">static</span> <span class="hljs-keyword">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">of_device_id</span> <span class="hljs-title">of_samtu_ledtest_match</span>[] =</span> &#123;<br>    &#123;.compatible = <span class="hljs-string">&quot;samtu,bee&quot;</span>&#125;,<br>    &#123;<span class="hljs-comment">/*    */</span>&#125;&#125;;<br><span class="hljs-meta">#<span class="hljs-meta-keyword">endif</span></span><br><span class="hljs-keyword">static</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">platform_driver</span> <span class="hljs-title">samtu_ledtest_driver</span> =</span><br>    &#123;<br>        .probe = samtu_ledtest_probe,<br>        .remove = samtu_ledtest_remove,<br>        .driver = &#123;<br>            .name = <span class="hljs-string">&quot;samtu_bee&quot;</span>,<br>            .owner = THIS_MODULE,<br><span class="hljs-meta">#<span class="hljs-meta-keyword">ifdef</span> CONFIG_OF</span><br>            .of_match_table = of_samtu_ledtest_match,<br><span class="hljs-meta">#<span class="hljs-meta-keyword">endif</span></span><br>        &#125;,<br>&#125;;<br><span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> __init <span class="hljs-title">ledtest_init</span><span class="hljs-params">(<span class="hljs-keyword">void</span>)</span> <span class="hljs-comment">//init led test //程序运行此处2</span></span><br><span class="hljs-function"></span>&#123;<br>        <span class="hljs-keyword">return</span> platform_driver_register(&amp;samtu_ledtest_driver);<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> __exit <span class="hljs-title">ledtest_exit</span><span class="hljs-params">(<span class="hljs-keyword">void</span>)</span> <span class="hljs-comment">//exit the led test</span></span><br><span class="hljs-function"></span>&#123;<br>        platform_driver_unregister(&amp;samtu_ledtest_driver);<br>&#125;<br>module_init(ledtest_init); <span class="hljs-comment">//程序首先调用此处1</span><br>module_exit(ledtest_exit);<br></code></pre></td></tr></table></figure>
+
+<h2 id="探针函数"><a href="#探针函数" class="headerlink" title="探针函数"></a>探针函数</h2><p><strong>结构体中最早执行的函数</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> <span class="hljs-title">samtu_ledtest_probe</span><span class="hljs-params">(struct platform_device *pdev)</span></span><br><span class="hljs-function"></span>&#123;<br>        <span class="hljs-keyword">int</span> ret = <span class="hljs-number">-1</span>;<br>        <span class="hljs-keyword">int</span> gpio, flag, irq;<br>        <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">device_node</span> *<span class="hljs-title">bee_node</span> =</span> pdev-&gt;dev.of_node;<br>        gpio = of_get_named_gpio_flags(bee_node, <span class="hljs-string">&quot;keygpio&quot;</span>, <span class="hljs-number">0</span>, &amp;flag);<br>        <span class="hljs-keyword">if</span> (!gpio_is_valid(gpio))<br>        &#123;<br>                printk(<span class="hljs-string">&quot;this is valid invalid gpio\n&quot;</span>);<br>                <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>        &#125;<br>        gpio_free(gpio);<br>        ret = gpio_request(gpio, <span class="hljs-string">&quot;keygpio&quot;</span>);<br>        <span class="hljs-keyword">if</span> (ret != <span class="hljs-number">0</span>)<br>        &#123;<br>                printk(<span class="hljs-string">&quot;this is invalid request gpio\n&quot;</span>);<br>                <span class="hljs-keyword">return</span> -EIO;<br>        &#125;<br>        <span class="hljs-keyword">else</span><br>        &#123;<br>                irq = gpio_to_irq(gpio);                                                        <span class="hljs-comment">//中断号映射</span><br>                ret = request_irq(irq, key_irq_handle, IRQF_TRIGGER_FALLING, <span class="hljs-string">&quot;key&quot;</span>, <span class="hljs-string">&quot;keyflag&quot;</span>); <span class="hljs-comment">// 注册中断</span><br>                <span class="hljs-keyword">if</span> (ret &lt; <span class="hljs-number">0</span>)<br>                &#123;<br>                        printk(<span class="hljs-string">&quot;---irq--failed\n&quot;</span>);<br>                        free_irq(irq, <span class="hljs-string">&quot;keyflag&quot;</span>);<br>                        gpio_free(gpio);<br>                        <span class="hljs-keyword">return</span> ret;<br>                &#125;<br>        &#125;<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>; <span class="hljs-comment">//return ok</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="移除函数"><a href="#移除函数" class="headerlink" title="移除函数"></a>移除函数</h2><p><strong>但驱动注册完成时执行的函数</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> <span class="hljs-title">samtu_ledtest_remove</span><span class="hljs-params">(struct platform_device *pdev)</span></span><br><span class="hljs-function"></span>&#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="中断函数"><a href="#中断函数" class="headerlink" title="中断函数"></a>中断函数</h2><p><strong>中断发生时执行的函数</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">irqreturn_t</span> <span class="hljs-title">key_irq_handle</span><span class="hljs-params">(<span class="hljs-keyword">int</span> irq, <span class="hljs-keyword">void</span> *dev_id, struct pt_regs *regs)</span></span><br><span class="hljs-function"></span>&#123;<br>        <span class="hljs-keyword">int</span> ret = <span class="hljs-number">-1</span>;<br>        <span class="hljs-keyword">int</span> gpio, flag, i;<br>        gpio = <span class="hljs-number">1006</span>;<br>        <span class="hljs-keyword">if</span> (!gpio_is_valid(gpio))<br>        &#123;<br>                <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>        &#125;<br>        gpio_free(gpio);<br>        <span class="hljs-keyword">if</span> (gpio_request(gpio, <span class="hljs-string">&quot;beegpio&quot;</span>))<br>        &#123;<br>                <span class="hljs-keyword">return</span> ret;<br>        &#125;<br>        <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">10</span>; i++)<br>        &#123;<br>                gpio_set_value(gpio, GPIO_LOW);<br>                mdelay(<span class="hljs-number">100</span>);<br>                gpio_set_value(gpio, GPIO_HIGH);<br>                mdelay(<span class="hljs-number">100</span>);<br>        &#125;<br>        <span class="hljs-keyword">return</span> IRQ_HANDLED;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/gpio/">gpio</a>
+                    
+                      <a class="hover-with-bg" href="/tags/dts/">dts</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/05/16/785cee0850e6426f9b7aae69b2825721/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">使用adb调试gpio</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/05/16/db6466d8e2d84253b8d47963f15dfd50/">
+                        <span class="hidden-mobile">屏幕旋转</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.2/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      $('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      $('#modalSearch').on('shown.bs.modal', function() {
+        $('#local-search-input').focus();
+      });
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>
